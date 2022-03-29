@@ -1,8 +1,8 @@
 FROM tiryoh/ros-melodic-desktop
 
-ARG ros1=melodic
-ENV ROS1_DISTRO ${ros1}
-ENV USER bot
+ARG UID=1000
+ARG USR_PWD=bot
+ARG USER="bot"
 
 USER root
 
@@ -35,38 +35,37 @@ RUN apt-get update && apt-get install --no-install-recommends -y \
     python-rosinstall
 
 # Install ROS packages
-# RUN apt-get update && \
-#     apt-get install -y \
-#     ros-${ROS1_DISTRO}-desktop
-
-# Install dependencies
 # https://unix.stackexchange.com/a/391112
 # COPY packages.txt packages.txt
 # RUN apt-get update && \
 #     xargs -a packages.txt apt-get install -y
 
-# ==================
-
-# RUN rosdep init
-# USER $USER
-# RUN echo ". /opt/ros/${ROS1_DISTRO}/setup.bash" >> /home/${USER}/.bashrc
-# RUN rosdep update
-# USER root
-
-# # Workspace
-# RUN mkdir -p /catkin_ws/src/ && \
-#     chown -R $USER /catkin_ws
-
-# WORKDIR /catkin_ws/
-
-# RUN usermod -a -G video $USER
-# RUN usermod -a -G dialout $USER
 
 # Default powerline10k theme, no plugins installed
 RUN sh -c "$(wget -O- https://github.com/deluan/zsh-in-docker/releases/download/v1.1.2/zsh-in-docker.sh)"
 
-RUN apt-get update
+RUN apt-get update && \
+    apt-get install -y software-properties-common && \
+    rm -rf /var/lib/apt/lists/*
+RUN add-apt-repository ppa:jonathonf/vim -y && apt-get update &&\
+	apt-get install -y \
+	vim \
+	exuberant-ctags \
+	clang-format \
+    python3-pip \
+ && rm -rf /var/lib/apt/lists/*
 
-RUN useradd -ms /usr/bin/zsh $USER
+RUN useradd -rms /usr/bin/zsh -u $UID $USER && echo ${USER}:${USR_PWD} | chpasswd
+RUN adduser ${USER} sudo
+RUN echo '%sudo ALL=(ALL) NOPASSWD:ALL' >> /etc/sudoer
+
+COPY --chown=bot:bot .vim /home/bot/.vim
+COPY --chown=bot:bot .config /home/bot/.config
+
+RUN ln -s /home/bot/.vim/.vimrc /home/bot/.vimrc
+RUN ln -s /home/bot/.config/tmux/.tmux.conf /home/bot/.tmux.conf
+RUN echo ". /home/bot/.config/custom.zshrc" >> /home/bot/.zshrc
+
+RUN pip3 install ranger-fm
 
 USER $USER

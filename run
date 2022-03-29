@@ -5,36 +5,29 @@ import subprocess
 import docker_utils as ut
 import os
 
-IMAGE_NAME = "ros1"
-
-def run_dev_environment(command, ws_mount, ros1="melodic", ros2=""):
+def run_dev_environment(img, command, ws_mount):
     user = "bot"
     docker_args = []
-    # dockerfile  = '{}'.format('ros1' if ros2 == '' else 'ros2')
-    dockerfile = IMAGE_NAME
-
-    temp_volume = "/home/{}/.{}".format(user, IMAGE_NAME)
+    dockerfile = img
 
     # Workspace name
     ws_name = "workspace"
 
     docker_args.append("-it")
     docker_args.append("--rm")
-    docker_args.append("--user {0}:{0}".format(user))
+    docker_args.append("--user {0}:{0}".format(ut.get_uid()))
     docker_args.append("--env=\"DISPLAY\"")
     docker_args.append("--volume=\"/tmp/.X11-unix:/tmp/.X11-unix:rw\"")
     docker_args.append("--volume=\"$HOME/.Xauthority:/root/.Xauthority:rw\"")
-    docker_args.append("--volume=\"$HOME/.config:/home/bot/.config:rw\"")
-    docker_args.append("--volume=\"$HOME/.vim:/home/bot/.vim:rw\"")
-    docker_args.append("--name=\"{}\"".format(IMAGE_NAME))
+    docker_args.append("--name=\"{}\"".format(img))
     docker_args.append("--privileged")
     docker_args.append("--network=\"host\"")
     # Mount workspace
-    docker_args.append("--volume {}:/{}".format(ws_mount, ws_name))
+    docker_args.append("--volume {}:/home/{}/{}/:Z".format(ws_mount, user, ws_name))
 
     docker_args.append("-e ROS_HOSTNAME=localhost")
     docker_args.append("-e ROS_MASTER_URI=http://localhost:11311")
-    docker_args.append("--workdir /{}/".format(ws_name))
+    docker_args.append("--workdir /home/{}/{}/".format(user, ws_name))
 
     # if ut.is_nvidia():
     #     docker_args.append("--runtime=\"nvidia\"")
@@ -48,12 +41,12 @@ def run_dev_environment(command, ws_mount, ros1="melodic", ros2=""):
     ut.run_command(docker_command)
     ut.run_command("xhost -local:root")
 
-def attach_dev_environment(command):
-    command = 'docker exec -it {0} {1}'.format(IMAGE_NAME, command)
+def attach_dev_environment(img, command):
+    command = 'docker exec -it {0} {1}'.format(img, command)
     ut.run_command(command)
 
-def is_running():
-    command = 'docker ps | grep {} > /dev/null'.format(IMAGE_NAME)
+def is_running(img):
+    command = 'docker ps | grep {} > /dev/null'.format(img)
     try:
         subprocess.check_call(command, shell=True)
     except Exception:
@@ -65,17 +58,16 @@ def main():
     # Parse arguments
     parser = argparse.ArgumentParser()
     parser.add_argument('-c', '--cmd', dest='command', default='bash')
-    parser.add_argument('-r1', '--ros1', dest="ros1_version", default="melodic")
-    parser.add_argument('-r2', '--ros2', dest="ros2_version", default="")
-    parser.add_argument('-ws', '--workspace', dest='workspace', default="/home/{}/catkin_ws".format(ut.get_user()))
+    parser.add_argument('-i', '--image', default="bill-dev")
+    parser.add_argument('-ws', '--workspace', dest='workspace', default="/home/{}/workspace".format(ut.get_user()))
     args = parser.parse_args()
 
-    if not is_running():
+    if not is_running(args.image):
         print('fresh launch.')
-        run_dev_environment(args.command, ws_mount=args.workspace, ros1=args.ros1_version, ros2=args.ros2_version)
+        run_dev_environment(args.image, args.command, ws_mount=args.workspace)
     else:
         print('attach to existed container')
-        attach_dev_environment(args.command)
+        attach_dev_environment(args.image, args.command)
 
 if __name__ == '__main__':
     main()
