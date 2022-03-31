@@ -34,13 +34,6 @@ RUN apt-get update && apt-get install --no-install-recommends -y \
     python-rosdep \
     python-rosinstall
 
-# Install ROS packages
-# https://unix.stackexchange.com/a/391112
-# COPY packages.txt packages.txt
-# RUN apt-get update && \
-#     xargs -a packages.txt apt-get install -y
-
-
 # Default powerline10k theme, no plugins installed
 RUN sh -c "$(wget -O- https://github.com/deluan/zsh-in-docker/releases/download/v1.1.2/zsh-in-docker.sh)"
 
@@ -61,11 +54,25 @@ RUN echo '%sudo ALL=(ALL) NOPASSWD:ALL' >> /etc/sudoer
 
 COPY --chown=bot:bot .vim /home/bot/.vim
 COPY --chown=bot:bot .config /home/bot/.config
+COPY --chown=bot:bot .oh-my-zsh /home/bot/.oh-my-zsh
+COPY --chown=bot:bot .zshrc /home/bot/.zshrc
 
 RUN ln -s /home/bot/.vim/.vimrc /home/bot/.vimrc
 RUN ln -s /home/bot/.config/tmux/.tmux.conf /home/bot/.tmux.conf
 RUN echo ". /home/bot/.config/custom.zshrc" >> /home/bot/.zshrc
 
 RUN pip3 install ranger-fm
+
+# Install ROS packages
+# https://unix.stackexchange.com/a/391112
+COPY packages.txt packages.txt
+RUN add-apt-repository -y ppa:borglab/gtsam-release-4.0 &&\
+    apt-get update && apt-get install -y \
+    cargo \
+    libgtsam-dev \
+    libgtsam-unstable-dev &&\
+    xargs -a packages.txt apt-get install -y
+
+COPY --chown=bot:bot .local /home/bot/.local
 
 USER $USER

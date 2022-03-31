@@ -15,6 +15,7 @@ def run_dev_environment(img, command, ws_mount):
 
     docker_args.append("-it")
     docker_args.append("--rm")
+    docker_args.append("--detach-keys=\"ctrl-p,d\"")
     docker_args.append("--user {0}:{0}".format(ut.get_uid()))
     docker_args.append("--env=\"DISPLAY\"")
     docker_args.append("--volume=\"/tmp/.X11-unix:/tmp/.X11-unix:rw\"")
@@ -42,7 +43,7 @@ def run_dev_environment(img, command, ws_mount):
     ut.run_command("xhost -local:root")
 
 def attach_dev_environment(img, command):
-    command = 'docker exec -it {0} {1}'.format(img, command)
+    command = 'docker exec -it --user {0}:{0} {1} {2}'.format(ut.get_uid(), img, command)
     ut.run_command(command)
 
 def is_running(img):
