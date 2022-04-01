@@ -6,7 +6,7 @@ import docker_utils as ut
 import os
 
 def run_dev_environment(img, command, ws_mount):
-    user = "bot"
+    user = ut.get_user()
     docker_args = []
     dockerfile = img
 

@@ -7,12 +7,13 @@ import os
 def main():
     # Parse arguments
     parser = argparse.ArgumentParser()
-    parser.add_argument('-u', '--uid', default="{}".format(ut.get_uid()))
+    parser.add_argument('-i', '--uid', default="{}".format(ut.get_uid()))
+    parser.add_argument('-u', '--user', default="{}".format(ut.get_user()))
     parser.add_argument('-t', '--tag', default="bill-dev")
     args = parser.parse_args()
 
     # Build selected image
-    command = 'docker build --build-arg UID={} -t {} .'.format(args.uid, args.tag)
+    command = 'docker build --build-arg UID={} --build-arg USER={} -t {} .'.format(args.uid, args.user, args.tag)
     ut.run_command(command)
 
 if __name__ == '__main__':
