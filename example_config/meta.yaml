@@ -1,0 +1,19 @@
+tag: bill-dev
+envs:
+  - dummy: bill
+absolute_volumes:
+  - /tmp/.X11-unix:/tmp/.X11-unix:rw
+  - /home/bill/.Xauthority:/root/.Xauthority:rw
+relative_volumes:
+  - .config:~/.config:Z
+  - .vim:~/.vim:Z
+  - .vim/.vimrc:~/.vimrc:Z
+  - .zshrc:~/.zshrc:Z
+  - .zsh_history:~/.zsh_history:Z
+  # - .z:~/.z:Z
+  - .oh-my-zsh:~/.oh-my-zsh:Z
+  - .config/tmux/.tmux.conf:~/.tmux.conf:Z
+  - .local:~/.local:Z
+  - .ssh:~/.ssh:Z
+  - workspace:~/workspace:Z
+cmd: tmux

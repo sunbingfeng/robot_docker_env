@@ -63,23 +63,23 @@ RUN useradd -rms /usr/bin/zsh -u $UID ${USER} && echo ${USER}:${USR_PWD} | chpas
 RUN adduser ${USER} sudo
 RUN echo '%sudo ALL=(ALL) NOPASSWD:ALL' >> /etc/sudoer
 
-COPY --chown=$USER:$USER .vim /home/$USER/.vim
-COPY --chown=$USER:$USER .config /home/$USER/.config
-COPY --chown=$USER:$USER .oh-my-zsh /home/$USER/.oh-my-zsh
-COPY --chown=$USER:$USER .zshrc /home/$USER/.zshrc
-
-RUN ln -s /home/$USER/.vim/.vimrc /home/$USER/.vimrc
-RUN ln -s /home/$USER/.config/tmux/.tmux.conf /home/$USER/.tmux.conf
-RUN echo ". /home/$USER/.config/custom.zshrc" >> /home/$USER/.zshrc
-
-COPY --chown=$USER:$USER .local /home/$USER/.local
-COPY --chown=$USER:$USER .ssh /home/$USER/.ssh
-
-RUN cd /home/$USER/.local/bin && ln -s /home/$USER/.local/bin/git-identity-repo/git-identity git-identity
-
-
 #### New commands put after here, and they will be cleaned up later.
 RUN pip install yapf pandas
 RUN apt-get update && apt-get install -y htop
+
+
+# COPY --chown=$USER:$USER .vim /home/$USER/.vim
+# COPY --chown=$USER:$USER .config /home/$USER/.config
+# COPY --chown=$USER:$USER .oh-my-zsh /home/$USER/.oh-my-zsh
+# COPY --chown=$USER:$USER .zshrc /home/$USER/.zshrc
+
+# RUN ln -s /home/$USER/.vim/.vimrc /home/$USER/.vimrc
+# RUN ln -s /home/$USER/.config/tmux/.tmux.conf /home/$USER/.tmux.conf
+# RUN echo ". /home/$USER/.config/custom.zshrc" >> /home/$USER/.zshrc
+
+# COPY --chown=$USER:$USER .local /home/$USER/.local
+# COPY --chown=$USER:$USER .ssh /home/$USER/.ssh
+
+# RUN cd /home/$USER/.local/bin && ln -s /home/$USER/.local/bin/git-identity-repo/git-identity git-identity
 
 USER $USER
