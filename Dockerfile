@@ -77,4 +77,9 @@ COPY --chown=$USER:$USER .ssh /home/$USER/.ssh
 
 RUN cd /home/$USER/.local/bin && ln -s /home/$USER/.local/bin/git-identity-repo/git-identity git-identity
 
+
+#### New commands put after here, and they will be cleaned up later.
+RUN pip install yapf pandas
+RUN apt-get update && apt-get install -y htop
+
 USER $USER

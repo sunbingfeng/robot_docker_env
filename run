@@ -23,6 +23,10 @@ def run_dev_environment(img, command, ws_mount):
     docker_args.append("--name=\"{}\"".format(img))
     docker_args.append("--privileged")
     docker_args.append("--network=\"host\"")
+
+    # Mount devices
+    docker_args.append("-v /dev:/dev --device-cgroup-rule='c 188:* rmw' --device-cgroup-rule='c 81:* rmw'")
+
     # Mount workspace
     docker_args.append("--volume {}:/home/{}/{}/:Z".format(ws_mount, user, ws_name))
 
