@@ -57,8 +57,7 @@ def run_dev_environment(config_file, img):
 
     # Join arguments together separated by a space
     docker_args = ' '.join(docker_args)
-    docker_command = "docker run {} {} {}".format(docker_args, dockerfile,
-                                                  command)
+    docker_command = "docker run {} {}".format(docker_args, dockerfile)
 
     print(docker_command)
 
