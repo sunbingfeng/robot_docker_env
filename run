@@ -30,11 +30,13 @@ def run_dev_environment(config_file, img):
     docker_args.append("--name=\"{}\"".format(img))
     docker_args.append("--privileged")
     docker_args.append("--network=\"host\"")
+    # docker_args.append("--add-host=host.docker.internal:host-gateway")
 
     # Mount devices
     docker_args.append(
         "-v /dev:/dev --device-cgroup-rule='c 188:* rmw' --device-cgroup-rule='c 81:* rmw'"
     )
+    docker_args.append("--gpus all")
 
     # Mount workspace
     for v in abs_volumes:

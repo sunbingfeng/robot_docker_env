@@ -65,9 +65,27 @@ RUN echo '%sudo ALL=(ALL) NOPASSWD:ALL' >> /etc/sudoer
 
 #### New commands put after here, and they will be cleaned up later.
 RUN pip install yapf pandas
-RUN apt-get update && apt-get install -y htop libceres-dev
+RUN apt-get update &&\
+    apt-get install -y htop \
+    libceres-dev \
+    libgoogle-glog-dev \
+    libatlas-base-dev \
+    libgoogle-glog-dev \
+    libsuitesparse-dev && \
+    rm -rf /var/lib/apt/lists/*
 
 RUN cargo install ripgrep
 RUN pip3 install evo --upgrade --no-binary evo
+
+ENV EIGEN_VERSION="3.3.3"
+ENV CERES_VERSION="2.1.0"
+
+RUN git clone https://github.com/ceres-solver/ceres-solver.git && \
+    cd ceres-solver && \
+    git checkout tags/${CERES_VERSION} && \
+    mkdir build && cd build && \
+    cmake .. && \
+    make -j2 install && \
+    cd ../.. && rm -rf ceres-solver
 
 USER $USER

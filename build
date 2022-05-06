@@ -9,11 +9,12 @@ def main():
     parser = argparse.ArgumentParser()
     parser.add_argument('-i', '--uid', default="{}".format(ut.get_uid()))
     parser.add_argument('-u', '--user', default="{}".format(ut.get_user()))
+    parser.add_argument('-f', '--docker_file', default="Dockerfile")
     parser.add_argument('-t', '--tag', default="bill-dev")
     args = parser.parse_args()
 
     # Build selected image
-    command = 'docker build --build-arg UID={} --build-arg USER={} -t {} .'.format(args.uid, args.user, args.tag)
+    command = 'docker build --build-arg UID={} --build-arg USER={} -f {} -t {} .'.format(args.uid, args.user, args.docker_file, args.tag)
     ut.run_command(command)
 
 if __name__ == '__main__':
