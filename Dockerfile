@@ -88,4 +88,7 @@ RUN git clone https://github.com/ceres-solver/ceres-solver.git && \
     make -j2 install && \
     cd ../.. && rm -rf ceres-solver
 
+COPY ./fd_8.4.0_amd64.deb /tmp/
+RUN dpkg -i /tmp/fd_8.4.0_amd64.deb && rm /tmp/fd_8.4.0_amd64.deb
+
 USER $USER
