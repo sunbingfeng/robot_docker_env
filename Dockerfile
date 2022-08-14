@@ -63,7 +63,6 @@ RUN useradd -rms /usr/bin/zsh -u $UID ${USER} && echo ${USER}:${USR_PWD} | chpas
 RUN adduser ${USER} sudo
 RUN echo '%sudo ALL=(ALL) NOPASSWD:ALL' >> /etc/sudoer
 
-#### New commands put after here, and they will be cleaned up later.
 RUN pip install yapf pandas
 RUN apt-get update &&\
     apt-get install -y htop \
